@@ -1,0 +1,27 @@
+Run these one at a time at the Mininet prompt, from ~/NIDR:
+
+1) Start server once:
+   h5 python3 app/tcp_server.py &
+
+2) Normal clients:
+   h1 python3 app/tcp_client.py 10.0.0.5 5000 "normal h1"
+   h2 python3 app/tcp_client.py 10.0.0.5 5000 "normal h2"
+   h3 python3 app/tcp_client.py 10.0.0.5 5000 "normal h3"
+
+3) Port scan:
+   h4 python3 app/attacker.py scan --start-port 4995 --end-port 5005
+
+4) Burst:
+   h4 python3 app/attacker.py burst --count 40 --interval 0.02
+
+5) Flow dump:
+   sh ovs-ofctl -O OpenFlow13 dump-flows s1
+
+6) During the block window, test:
+   h4 python3 app/tcp_client.py 10.0.0.5 5000 "should be blocked"
+   h1 python3 app/tcp_client.py 10.0.0.5 5000 "normal client still works"
+
+7) After the configured 60-second hard timeout:
+   h4 python3 app/tcp_client.py 10.0.0.5 5000 "attacker access restored"
+
+If an earlier scan blocks h4, wait for its timeout before testing the burst.
